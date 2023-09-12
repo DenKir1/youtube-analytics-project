@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "youtube-analytics-project"
+version = "0.1.0"
+description = ""
+authors = ["Denis Kirdyankin <kird.den@rambler.ru>"]
+readme = "README.md"
+packages = [{include = "youtube_analytics_project"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+isodate = "^0.6.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
