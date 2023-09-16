@@ -9,11 +9,45 @@ class Channel:
 
     def __init__(self, channel_id: str) -> None:
         """Экземпляр инициализируется id канала. Дальше все данные будут подтягиваться по API."""
-        api_key: str = os.getenv("API_KEY_YT") #ключ не работает без перезагрузки
-        youtube = build('youtube', 'v3', developerKey=api_key)
-        self.channel_id = youtube.channels().list(id=channel_id, part='snippet,statistics').execute()
 
+        youtube = self.get_service()
+        ch = youtube.channels().list(id=channel_id, part='snippet,statistics').execute()
+        self.__channel_id = channel_id
+        self.title = ch['items'][0]['snippet']['title']
+        self.description = ch['items'][0]['snippet']['description']
+        self.url = f'https://www.youtube.com/channel/{self.__channel_id}'
+        self.subscribers = ch['items'][0]['statistics']['subscriberCount']
+        self.video_count = ch['items'][0]['statistics']['videoCount']
+        self.view = ch['items'][0]['statistics']['viewCount']
+
+    @property
+    def channel_id(self):
+        return self.__channel_id
 
     def print_info(self) -> None:
         """Выводит в консоль информацию о канале."""
-        print(json.dumps(self.channel_id, indent=2, ensure_ascii=False))
+        print(f"""id - {self.channel_id} 
+Name - {self.title}
+Description - {self.description}
+url - {self.url}
+Subscribers - {self.subscribers}
+Video - {self.video_count}
+View - {self.view}""")
+
+    @classmethod
+    def get_service(cls):
+        api_key: str = os.getenv("API_KEY_YT")  # ключ не работает без перезагрузки
+        youtube = build('youtube', 'v3', developerKey=api_key)
+        return youtube
+
+    def to_json(self, path):
+        json_dict = {"id": self.channel_id,
+                     "Title": self.title,
+                     "Description": self.description,
+                     "url": self.url,
+                     "Subscribers": self.subscribers,
+                     "Video": self.video_count,
+                     "View": self.view}
+
+        with open(path, 'w') as outfile:
+            json.dump(json_dict, outfile, ensure_ascii=False)
