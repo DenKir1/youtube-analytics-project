@@ -8,7 +8,7 @@ class Video(Channel):
         video_response = youtube.videos().list(part='snippet,statistics,contentDetails,topicDetails',
                                                id=video_id
                                                ).execute()
-
+        self.video_response = video_response
         self.__video_id = video_id
         self.title = video_response['items'][0]['snippet']['title']
         self.description = video_response['items'][0]['snippet']['description']
@@ -30,8 +30,7 @@ class PLVideo(Video):
         super().__init__(video_id)
         youtube = super().get_service()
         playlist_videos = youtube.playlistItems().list(playlistId=playlist_id,
-                                                       part='contentDetails',
+                                                       part='contentDetails, snippet',
                                                        maxResults=50,
                                                        ).execute()
-
         self.playlist_id = [video['contentDetails']['videoId'] for video in playlist_videos['items']]
